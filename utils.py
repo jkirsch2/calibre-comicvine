@@ -133,6 +133,9 @@ def build_meta(log, issue):
     authors = [p.name for p in issue.person_credits]
     meta = Metadata(title, authors)
     meta.series = issue.volume.name
+    if issue.volume.start_year:
+        meta.series = meta.series + " (" + str(issue.volume.start_year) + ")"
+    meta.series = meta.series + " (" + str(issue.volume.id) + ")"
     meta.series_index = str(issue.issue_number)
     meta.set_identifier("comicvine", str(issue.id))
     meta.set_identifier("comicvine-volume", str(issue.volume.id))
@@ -161,7 +164,7 @@ def find_volumes(volume_title, log, volumeid=None):
         log.debug(f"Looking up volume: {volume_title}")
         matches = pycomicvine.Volumes.search(
             query=volume_title,
-            field_list=["id", "name", "count_of_issues", "publisher"],
+            field_list=["id", "name", "count_of_issues", "publisher", "start_year"],
         )
         max_matches = PREFS["max_volumes"] - 1
         for i, match in enumerate(matches):
